@@ -29,5 +29,8 @@
         <activity
             android:name=".ChapterActivity"
             android:exported="false"/>
+        <activity
+            android:name=".AdminAdapterActivity"
+        android:exported="false"/>
     </application>
 </manifest>

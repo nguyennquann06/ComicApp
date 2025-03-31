@@ -16,11 +16,26 @@ public class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ComicViewHol
     private List<Comic> comicList;
     private Context context;
     private boolean isAdmin;
+    private OnComicEditListener editListener;
+    private OnComicDeleteListener deleteListener;
+    private OnComicClickListener clickListener;
 
     public ComicAdapter(List<Comic> comicList, Context context, boolean isAdmin) {
         this.comicList = comicList;
         this.context = context;
         this.isAdmin = isAdmin;
+    }
+
+    public void setOnComicEditListener(OnComicEditListener listener) {
+        this.editListener = listener;
+    }
+
+    public void setOnComicDeleteListener(OnComicDeleteListener listener) {
+        this.deleteListener = listener;
+    }
+
+    public void setOnComicClickListener(OnComicClickListener listener) {
+        this.clickListener = listener;
     }
 
     @Override
@@ -43,24 +58,30 @@ public class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ComicViewHol
             holder.comicImageView.setImageResource(android.R.drawable.ic_menu_gallery);
         }
 
-        // Sự kiện click để mở chapters
         holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, ChapterActivity.class);
-            intent.putExtra("comic_id", comic.getId());
-            context.startActivity(intent);
+            if (clickListener != null) {
+                clickListener.onClick(comic);
+            } else if (!isAdmin) {
+                Intent intent = new Intent(context, ChapterActivity.class);
+                intent.putExtra("comic_id", comic.getId());
+                context.startActivity(intent);
+            }
         });
 
         if (isAdmin) {
             holder.editButton.setVisibility(View.VISIBLE);
             holder.deleteButton.setVisibility(View.VISIBLE);
+
             holder.editButton.setOnClickListener(v -> {
-                // TODO: Xử lý sửa truyện
+                if (editListener != null) {
+                    editListener.onEdit(comic);
+                }
             });
+
             holder.deleteButton.setOnClickListener(v -> {
-                DatabaseHelper db = new DatabaseHelper(context);
-                db.deleteComic(comic.getId());
-                comicList.remove(position);
-                notifyItemRemoved(position);
+                if (deleteListener != null) {
+                    deleteListener.onDelete(comic);
+                }
             });
         } else {
             holder.editButton.setVisibility(View.GONE);
@@ -91,5 +112,17 @@ public class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ComicViewHol
             editButton = itemView.findViewById(R.id.editButton);
             deleteButton = itemView.findViewById(R.id.deleteButton);
         }
+    }
+
+    public interface OnComicEditListener {
+        void onEdit(Comic comic);
+    }
+
+    public interface OnComicDeleteListener {
+        void onDelete(Comic comic);
+    }
+
+    public interface OnComicClickListener {
+        void onClick(Comic comic);
     }
 }

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">#FF5722</item> <!-- Màu cam đậm -->
+        <item name="colorPrimaryDark">#E64A19</item> <!-- Cam tối hơn -->
+        <item name="colorAccent">#FFCA28</item> <!-- Màu vàng nổi bật -->
+        <item name="android:windowBackground">@android:color/white</item> <!-- Nền trắng -->
     </style>
 </resources>
