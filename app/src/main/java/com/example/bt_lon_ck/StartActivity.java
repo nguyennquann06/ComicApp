@@ -2,34 +2,55 @@ package com.example.bt_lon_ck;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.Button;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class StartActivity extends AppCompatActivity {
+    private TextView welcomeTextView, dateTimeTextView;
+    private Button guestButton, adminButton;
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        // Ẩn Action Bar nếu cần
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
 
-        Button guestButton = findViewById(R.id.guestButton);
-        Button adminButton = findViewById(R.id.adminButton);
+        welcomeTextView = findViewById(R.id.welcomeTextView);
+        dateTimeTextView = findViewById(R.id.dateTimeTextView);
+        guestButton = findViewById(R.id.guestButton);
+        adminButton = findViewById(R.id.adminButton);
 
-        // Nút Guest: Chuyển đến MainActivity
-        guestButton.setOnClickListener(v -> {
-            Intent intent = new Intent(StartActivity.this, MainActivity.class);
-            startActivity(intent);
-        });
+        // Cập nhật ngày giờ
+        handler = new Handler(Looper.getMainLooper());
+        updateDateTime();
+        handler.postDelayed(this::updateDateTime, 1000);
 
-        // Nút Admin: Chuyển đến AdminLoginActivity
-        adminButton.setOnClickListener(v -> {
-            Intent intent = new Intent(StartActivity.this, AdminLoginActivity.class);
-            startActivity(intent);
-        });
+        // Sự kiện click
+        guestButton.setOnClickListener(v -> startActivity(new Intent(StartActivity.this, MainActivity.class)));
+        adminButton.setOnClickListener(v -> startActivity(new Intent(StartActivity.this, AdminLoginActivity.class)));
+    }
+
+    private void updateDateTime() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+        String currentDateTime = dateFormat.format(new Date());
+        dateTimeTextView.setText(currentDateTime);
+        handler.postDelayed(this::updateDateTime, 1000);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
     }
 }

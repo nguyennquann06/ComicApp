@@ -31,6 +31,6 @@
             android:exported="false"/>
         <activity
             android:name=".AdminAdapterActivity"
-        android:exported="false"/>
+            android:exported="false"/>
     </application>
 </manifest>
