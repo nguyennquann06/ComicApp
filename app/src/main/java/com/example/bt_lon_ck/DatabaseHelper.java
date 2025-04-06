@@ -41,7 +41,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String createComicTable = "CREATE TABLE " + TABLE_COMICS + "("
                 + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + COLUMN_TITLE + " TEXT,"
+                + COLUMN_TITLE + " TEXT, "
                 + COLUMN_AUTHOR + " TEXT,"
                 + COLUMN_DESC + " TEXT,"
                 + COLUMN_IMAGE + " TEXT)";
@@ -69,10 +69,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO " + TABLE_COMICS + " VALUES (null, 'Dragon Ball', 'Akira Toriyama', 'Cuộc phiêu lưu của Goku', 'dragon_ball')");
         db.execSQL("INSERT INTO " + TABLE_COMICS + " VALUES (null, 'Cô Bé Quàng Khăn Đỏ', 'Brothers Grimm', 'Câu chuyện cổ tích', 'little_red_riding_hood')");
 
-        // Thêm dữ liệu mẫu cho chapters (comic_id = 5 là "Cô Bé Quàng Khăn Đỏ")
-        db.execSQL("INSERT INTO " + TABLE_CHAPTERS + " VALUES (null, 5, 1, 'Chap 1: Đi thăm bà', 'chapter_1')");
-        db.execSQL("INSERT INTO " + TABLE_CHAPTERS + " VALUES (null, 5, 2, 'Chap 2: Gặp sói', 'chapter_2')");
-        db.execSQL("INSERT INTO " + TABLE_CHAPTERS + " VALUES (null, 5, 3, 'Chap 3: Thoát hiểm', 'chapter_3')");
+        db.execSQL("INSERT INTO " + TABLE_CHAPTERS + " VALUES (null, 5, 1, 'Chap 1', 'chapter_1_kd')");
+        db.execSQL("INSERT INTO " + TABLE_CHAPTERS + " VALUES (null, 5, 2, 'Chap 2', 'chapter_2_kd')");
+        db.execSQL("INSERT INTO " + TABLE_CHAPTERS + " VALUES (null, 5, 3, 'Chap 3', 'chapter_3_kd')");
+        db.execSQL("INSERT INTO " + TABLE_CHAPTERS + " VALUES (null, 5, 4, 'Chap 4', 'chapter_4_kd')");
+        db.execSQL("INSERT INTO " + TABLE_CHAPTERS + " VALUES (null, 5, 5, 'Chap 5', 'chapter_5_kd')");
+        db.execSQL("INSERT INTO " + TABLE_CHAPTERS + " VALUES (null, 5, 6, 'Chap 6', 'chapter_6_kd')");
+        db.execSQL("INSERT INTO " + TABLE_CHAPTERS + " VALUES (null, 5, 7, 'Chap 7', 'chapter_7_kd')");
+        db.execSQL("INSERT INTO " + TABLE_CHAPTERS + " VALUES (null, 5, 8, 'Chap 8', 'chapter_8_kd')");
+        db.execSQL("INSERT INTO " + TABLE_CHAPTERS + " VALUES (null, 5, 9, 'Chap 9', 'chapter_9_kd')");
+        db.execSQL("INSERT INTO " + TABLE_CHAPTERS + " VALUES (null, 5, 10, 'Chap 10', 'chapter_10_kd')");
+        db.execSQL("INSERT INTO " + TABLE_CHAPTERS + " VALUES (null, 5, 11, 'Chap 11', 'chapter_11_kd')");
+        db.execSQL("INSERT INTO " + TABLE_CHAPTERS + " VALUES (null, 5, 12, 'Chap 12', 'chapter_12_kd')");
+        db.execSQL("INSERT INTO " + TABLE_CHAPTERS + " VALUES (null, 5, 13, 'Chap 13', 'chapter_13_kd')");
 
         Log.d(TAG, "Database created and sample data inserted");
     }
@@ -85,17 +94,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // CRUD cho chapters
-    public void addChapter(Chapter chapter) {
+    public long addChapter(Chapter chapter) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_COMIC_ID, chapter.getComicId());
-        values.put(COLUMN_CHAPTER_NUMBER, chapter.getChapterNumber());
+        values.put(COLUMN_CHAPTER_NUMBER,chapter.getChapterNumber());
         values.put(COLUMN_CHAPTER_TITLE, chapter.getChapterTitle());
         values.put(COLUMN_CHAPTER_IMAGE, chapter.getChapterImage());
         long id = db.insert(TABLE_CHAPTERS, null, values);
         Log.d(TAG, "Added chapter with ID: " + id);
         db.close();
+        return id;
+    }
+
+    public long addComic(Comic comic) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_COMICS + " WHERE " + COLUMN_TITLE + "=?",
+                new String[]{comic.getTitle()});
+        if (cursor.getCount() > 0) {
+            Log.d(TAG, "Comic with title '" + comic.getTitle() + "' already exists");
+            cursor.close();
+            db.close();
+            return -1;
+        }
+        cursor.close();
+
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_TITLE, comic.getTitle());
+        values.put(COLUMN_AUTHOR, comic.getAuthor());
+        values.put(COLUMN_DESC, comic.getDescription());
+        values.put(COLUMN_IMAGE, comic.getImage());
+        long id = db.insert(TABLE_COMICS, null, values);
+        Log.d(TAG, "Added comic with ID: " + id);
+        db.close();
+        return id;
     }
 
     public void updateChapter(Chapter chapter) {
@@ -137,19 +170,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return chapterList;
-    }
-
-    // CRUD cho comics (giữ nguyên)
-    public void addComic(Comic comic) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_TITLE, comic.getTitle());
-        values.put(COLUMN_AUTHOR, comic.getAuthor());
-        values.put(COLUMN_DESC, comic.getDescription());
-        values.put(COLUMN_IMAGE, comic.getImage());
-        long id = db.insert(TABLE_COMICS, null, values);
-        Log.d(TAG, "Added comic with ID: " + id);
-        db.close();
     }
 
     public void updateComic(Comic comic) {

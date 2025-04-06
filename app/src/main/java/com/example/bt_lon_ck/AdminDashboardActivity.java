@@ -44,7 +44,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         adapter.setOnComicEditListener(this::showEditComicDialog);
         adapter.setOnComicDeleteListener(this::showDeleteComicDialog);
         adapter.setOnComicClickListener(comic -> {
-            Intent intent = new Intent(this, AdminAdapterActivity.class); // Đổi tên ở đây
+            Intent intent = new Intent(this, AdminAdapterActivity.class);
             intent.putExtra("comic_id", comic.getId());
             startActivity(intent);
         });
@@ -72,9 +72,13 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
                     if (!title.isEmpty() && !author.isEmpty()) {
                         Comic comic = new Comic(0, title, author, description, image);
-                        dbHelper.addComic(comic);
-                        loadComics();
-                        Toast.makeText(this, "Đã thêm truyện", Toast.LENGTH_SHORT).show();
+                        long result = dbHelper.addComic(comic); // Lưu giá trị trả về
+                        if (result == -1) {
+                            Toast.makeText(this, "Truyện đã tồn tại!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            loadComics(); // Cập nhật danh sách chỉ khi thêm thành công
+                            Toast.makeText(this, "Đã thêm truyện", Toast.LENGTH_SHORT).show();
+                        }
                     } else {
                         Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
                     }
