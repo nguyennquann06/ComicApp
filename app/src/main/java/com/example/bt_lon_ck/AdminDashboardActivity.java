@@ -19,6 +19,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
     private ComicAdapter adapter;
     private DatabaseHelper dbHelper;
     private Button addButton;
+    private Button logoutButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,11 +32,21 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
         addButton = findViewById(R.id.addButton);
+        logoutButton = findViewById(R.id.logoutButton);
         dbHelper = new DatabaseHelper(this);
 
         loadComics();
 
         addButton.setOnClickListener(v -> showAddComicDialog());
+
+        logoutButton.setOnClickListener(v -> {
+            // Chuyển về màn hình đăng nhập AdminLoginActivity
+            Intent intent = new Intent(AdminDashboardActivity.this, AdminLoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Xóa stack Activity
+            startActivity(intent);
+            Toast.makeText(this, "Đã đăng xuất", Toast.LENGTH_SHORT).show();
+            finish(); // Đóng AdminDashboardActivity
+        });
     }
 
     private void loadComics() {
@@ -72,11 +83,11 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
                     if (!title.isEmpty() && !author.isEmpty()) {
                         Comic comic = new Comic(0, title, author, description, image);
-                        long result = dbHelper.addComic(comic); // Lưu giá trị trả về
+                        long result = dbHelper.addComic(comic);
                         if (result == -1) {
                             Toast.makeText(this, "Truyện đã tồn tại!", Toast.LENGTH_SHORT).show();
                         } else {
-                            loadComics(); // Cập nhật danh sách chỉ khi thêm thành công
+                            loadComics();
                             Toast.makeText(this, "Đã thêm truyện", Toast.LENGTH_SHORT).show();
                         }
                     } else {
